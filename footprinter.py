@@ -80,7 +80,7 @@ def make_cairo_png(filename, scale, package):
 def make_pil_png(f, scale, package):
     from PIL import Image, ImageDraw
     
-    scale = float(options.pngscale)
+    scale = float(scale)
     margin = 0.1 # mm
     size = package.courtyard
     w = int((size[1][0] - size[0][0] + 2 * margin) * scale)

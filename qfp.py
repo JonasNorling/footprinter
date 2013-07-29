@@ -76,7 +76,19 @@ class Qfp(object):
             raise "Invalid density (need L,N or M)"
 
         if self.params.termwidth is None:
+            # Pick defaults from JEDEC MS-026
             self.params.termwidth = 0.1 # Ridiculous
+            if self.params.pitch <= 0.45:
+                self.params.termwidth = 0.23
+            elif self.params.pitch <= 0.55:
+                self.params.termwidth = 0.27
+            elif self.params.pitch <= 0.70:
+                self.params.termwidth = 0.38
+            elif self.params.pitch <= 0.90:
+                self.params.termwidth = 0.45
+            else:
+                self.params.termwidth = 0.50
+
     
     def generate(self, **kwargs):
         """Generate data using previously loaded name and parameters. Returns a list."""
