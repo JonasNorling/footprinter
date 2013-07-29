@@ -1,32 +1,3 @@
-# This script will generate Kicad modules (footprints) for QFP (TQFP, LQFP, ...) packages
-# using the pad margins defined in IPC 7351. The footprint geometry is implicit from its
-# IPC 7351 name, except for the terminal (lead) width that has to be specified separately.
-#
-# Limitations:
-#   * Only square packages are implemented (there are rectangular ones in JEDEC MS-026).
-#   * I haven't seen IPC-7351A or IPC-7351B.
-#
-# Some package examples:
-#
-# Atmel Atmega8 package 32A (TQFP-32, 0.8mm pitch):
-#   body size 7x7 mm, conforms to JEDEC MS-026 variation ABA.
-#   Terminal (lead) width is 0.45mm (max) according to JEDEC.
-#   -n QFP80P900X900X100-32 -W 0.45
-#
-# STM32F102x8: LQFP-48 0.5mm pitch:
-# TI TLK110: PT (S-PQFP-G48) package, 0.5mm pitch:
-#   body size 7x7 mm, no JEDEC standard mentioned.
-#   -n QFP50P900X900X100-48 -W 0.27
-#
-# STM32F102x8: LQFP-64 0.5mm pitch:
-#   body size 10x10 mm, no JEDEC standard mentioned.
-#   -n QFP50P1200X1200X100-64 -W 0.27
-#
-# JEDEC MS-026D variation BJC (256 pins)
-#   body size 28x28 mm, pitch 0.4 mm
-#   -n QFP40P3000X3000-256 -W 0.23
-#
-
 import re
 from common import Package, Line, Pad, Circle
 
