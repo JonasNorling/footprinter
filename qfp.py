@@ -111,15 +111,55 @@ class Qfp(object):
         courtyardsize = padtoe + params.courtyard_excess
         outlinesize = l / 2 - params.termlen + params.silkwidth
 
-        if False:
-            # Draw courtyard on silkscreen
-            for side in range(0, 4):    
-                th = (270 + side * 90) % 360 # Coordinate system rotation for this side
-                line = Line( (courtyardsize, courtyardsize), (courtyardsize, -courtyardsize) )
-                line.width = params.silkwidth
-                line.rotate(th)
-                data.append(line)
+        # Draw courtyard on package layer
+        for side in range(0, 4):
+            th = (270 + side * 90) % 360 # Coordinate system rotation for this side
+            line = Line( (courtyardsize, courtyardsize), (courtyardsize, -courtyardsize) )
+            line.width = 0
+            line.layer = "package"
+            line.rotate(th)
+            data.append(line)
 
+        # Draw package size on package layer
+        for side in range(0, 4):
+            chamfer = 0.5
+            packagesize = l / 2 - params.termlen
+            th = (270 + side * 90) % 360 # Coordinate system rotation for this side
+            line = Line( (-packagesize + chamfer, packagesize), (packagesize - chamfer, packagesize) )
+            line.width = 0
+            line.layer = "package"
+            line.rotate(th)
+            data.append(line)
+            line = Line( (packagesize - chamfer, packagesize), (packagesize, packagesize - chamfer) )
+            line.width = 0
+            line.layer = "package"
+            line.rotate(th)
+            data.append(line)
+
+            leadblockw = pins_per_side * params.pitch / 2.0
+            leadblockh = l / 2
+            th = (270 + side * 90) % 360 # Coordinate system rotation for this side
+            line = Line( (-leadblockw, leadblockh), (leadblockw, leadblockh) )
+            line.width = 0
+            line.layer = "package"
+            line.rotate(th)
+            data.append(line)
+            line = Line( (-leadblockw, leadblockh - params.footlen), (leadblockw, leadblockh - params.footlen) )
+            line.width = 0
+            line.layer = "package"
+            line.rotate(th)
+            data.append(line)
+            line = Line( (-leadblockw, leadblockh), (-leadblockw, packagesize) )
+            line.width = 0
+            line.layer = "package"
+            line.rotate(th)
+            data.append(line)
+            line = Line( (leadblockw, leadblockh), (leadblockw, packagesize) )
+            line.width = 0
+            line.layer = "package"
+            line.rotate(th)
+            data.append(line)
+    
         # Draw outline on silkscreen
         linelen = outlinesize - first_pad_y - padwidth / 2 - params.silkwidth * 1.5
         for side in range(0, 4):
@@ -161,7 +201,7 @@ class Qfp(object):
     
                 pinno += 1
                 y -= params.pitch
-    
+
         # All done!
         package.data = data
         package.courtyard = ((-courtyardsize, -courtyardsize), (courtyardsize, courtyardsize))

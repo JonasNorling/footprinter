@@ -91,19 +91,26 @@ class Line:
         self.end = rotate(self.end, th)
 
     def kicad_sexp(self):
+        if self.layer == "package":
+            return ""
         return "  (fp_line (start %.3f %.3f) (end %.3f %.3f) (layer %s) (width %.2f))\n" % (
             self.start[0], self.start[1],
             self.end[0], self.end[1],
             self.layer, self.width)
 
     def kicad_mod(self):
+        if self.layer == "package":
+            return ""
         return "DS %d %d %d %d %d 21\n" % (
             decimil(self.start[0]), decimil(self.start[1]),
             decimil(self.end[0]), decimil(self.end[1]),
             decimil(self.width))
 
     def draw(self, ctx):
-        ctx.set_source_rgb(0, 0.52, 0.52)
+        if self.layer == "package":
+            ctx.set_source_rgb(0.7, 0.7, 0.7)
+        else:
+            ctx.set_source_rgb(0, 0.52, 0.52)
         ctx.set_line_width(self.width)
         ctx.move_to(*self.start)
         ctx.line_to(*self.end)

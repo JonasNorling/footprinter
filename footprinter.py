@@ -173,7 +173,7 @@ if __name__ == "__main__":
     if options.termwidth: # "b" in MSC-026, varies with pitch
         qfp.params.termwidth = options.termwidth
     if options.jt:
-        qfp.params.jt = options.jt
+        qfp.params.JT = options.jt
 
     package = qfp.generate()
 
