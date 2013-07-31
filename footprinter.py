@@ -48,6 +48,9 @@ the distance between the pin ends is 9.00 mm, pin pitch 0.50 mm (this is a stand
 def make_kicad_mod(f, name, package):
     f.write("(module %s (layer F.Cu)\n" % name)
     f.write("  (at 0 0)\n")
+    f.write("  (descr %s)\n" % package.description)
+    f.write("  (tags qfp, lqfp, tqfp)\n")
+    f.write("  (model smd/tqfp32.wrl (at (xyz 0 0 0)) (scale (xyz 1 1 1)) (rotate (xyz 0 0 0)))\n")
     f.write("  (fp_text reference %s (at 0 -1) (layer F.SilkS)\n" % name)
     f.write("    (effects (font (size 1.5 1.5) (thickness 0.15))))\n")
     f.write("  (fp_text value VAL** (at 0 1) (layer F.SilkS) hide\n")

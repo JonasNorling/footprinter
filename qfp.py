@@ -94,6 +94,10 @@ class Qfp(object):
         """Generate data using previously loaded name and parameters. Returns a list."""
         data = []
         params = self.params
+        package = Package()
+
+        package.description = "QFP-%d, %.02fmm pitch" % (
+                                                    params.pincount, params.pitch)
     
         l = params.l1 # Package length along this dimension (FIXME: non-square packages)
         # Positions of things relative to data center
@@ -159,7 +163,6 @@ class Qfp(object):
                 y -= params.pitch
     
         # All done!
-        package = Package()
         package.data = data
         package.courtyard = ((-courtyardsize, -courtyardsize), (courtyardsize, courtyardsize))
     
