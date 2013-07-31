@@ -81,8 +81,9 @@ class Package:
 
 
 class Line:
-    def __init__(self, start, end):
+    def __init__(self, start, end, width = 0):
         self.layer = "F.SilkS"
+        self.width = width
         self.start = start
         self.end = end
 
@@ -108,13 +109,48 @@ class Line:
 
     def draw(self, ctx):
         if self.layer == "package":
-            ctx.set_source_rgb(0.7, 0.7, 0.7)
+            ctx.set_source_rgb(0, 0, 0)
         else:
             ctx.set_source_rgb(0, 0.52, 0.52)
         ctx.set_line_width(self.width)
         ctx.move_to(*self.start)
         ctx.line_to(*self.end)
         ctx.stroke()
+
+
+class Rectangle:
+    def __init__(self, start, end, width = 0):
+        self.layer = "F.SilkS"
+        self.width = width
+        self.lines = [ Line((start[0], start[1]), (end[0], start[1])),
+                       Line((end[0], start[1]), (end[0], end[1])),
+                       Line((end[0], end[1]), (start[0], end[1])),
+                       Line((start[0], end[1]), (start[0], start[1])) ]
+
+    def rotate(self, th):
+        for l in self.lines: l.rotate(th)
+
+    def kicad_sexp(self):
+        r = ""
+        for l in self.lines:
+            l.layer = self.layer
+            l.width = self.width
+            r += l.kicad_sexp()
+        return r
+
+    def kicad_mod(self):
+        r = ""
+        for l in self.lines:
+            l.layer = self.layer
+            l.width = self.width
+            r += l.kicad_mod()
+        return r
+
+    def draw(self, ctx):
+        for l in self.lines:
+            l.layer = self.layer
+            l.width = self.width
+            l.draw(ctx)
 
 
 class Circle:

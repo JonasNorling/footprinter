@@ -1,5 +1,9 @@
+# Generate four-sided gull-wing package footprints, for instance for *QFP packages
+#
+# This package type is standardised in JEDEC MS-026.
+#
 import re
-from common import Package, Line, Pad, Circle
+from common import Package, Line, Pad, Rectangle
 
 class Params(object):
     pass
@@ -8,7 +12,7 @@ class Qfp(object):
     def __init__(self):
         self.params = Params()
         self.params.density = "N"    # IPC-7351 density level (L, N or M)
-        self.params.termwidth = None # [mm] default terminal (lead) width.
+        self.params.termwidth = None # [mm] maximum terminal (lead) width.
         self.params.termlen = 1.0    # [mm] "L1" in MSC-026 (toe-to-package length)
         self.params.footlen = 0.6    # [mm] "L" in MSC-026 (toe-to-heel length)
         self.params.silkwidth = 0.15 # [mm] silkscreen line width and clearance
@@ -112,13 +116,9 @@ class Qfp(object):
         outlinesize = l / 2 - params.termlen + params.silkwidth
 
         # Draw courtyard on package layer
-        for side in range(0, 4):
-            th = (270 + side * 90) % 360 # Coordinate system rotation for this side
-            line = Line( (courtyardsize, courtyardsize), (courtyardsize, -courtyardsize) )
-            line.width = 0
-            line.layer = "package"
-            line.rotate(th)
-            data.append(line)
+        rect = Rectangle( (-courtyardsize, -courtyardsize), (courtyardsize, courtyardsize))
+        rect.layer = "package"
+        data.append(rect)
 
         # Draw package size on package layer
         for side in range(0, 4):
@@ -126,39 +126,25 @@ class Qfp(object):
             packagesize = l / 2 - params.termlen
             th = (270 + side * 90) % 360 # Coordinate system rotation for this side
             line = Line( (-packagesize + chamfer, packagesize), (packagesize - chamfer, packagesize) )
-            line.width = 0
             line.layer = "package"
             line.rotate(th)
             data.append(line)
             line = Line( (packagesize - chamfer, packagesize), (packagesize, packagesize - chamfer) )
-            line.width = 0
             line.layer = "package"
             line.rotate(th)
             data.append(line)
 
             leadblockw = pins_per_side * params.pitch / 2.0
             leadblockh = l / 2
-            th = (270 + side * 90) % 360 # Coordinate system rotation for this side
-            line = Line( (-leadblockw, leadblockh), (leadblockw, leadblockh) )
-            line.width = 0
-            line.layer = "package"
-            line.rotate(th)
-            data.append(line)
-            line = Line( (-leadblockw, leadblockh - params.footlen), (leadblockw, leadblockh - params.footlen) )
-            line.width = 0
-            line.layer = "package"
-            line.rotate(th)
-            data.append(line)
-            line = Line( (-leadblockw, leadblockh), (-leadblockw, packagesize) )
-            line.width = 0
-            line.layer = "package"
-            line.rotate(th)
-            data.append(line)
-            line = Line( (leadblockw, leadblockh), (leadblockw, packagesize) )
-            line.width = 0
-            line.layer = "package"
-            line.rotate(th)
-            data.append(line)
+            
+            rect = Rectangle( (-leadblockw, leadblockh), (leadblockw, leadblockh - params.footlen), 0)
+            rect.layer = "package"
+            rect.rotate(th)
+            data.append(rect)
+            rect = Rectangle( (-leadblockw, leadblockh - params.footlen), (leadblockw, packagesize), 0)
+            rect.layer = "package"
+            rect.rotate(th)
+            data.append(rect)
     
         # Draw outline on silkscreen
         linelen = outlinesize - first_pad_y - padwidth / 2 - params.silkwidth * 1.5

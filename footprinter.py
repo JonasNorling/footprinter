@@ -30,9 +30,11 @@
 
 import optparse
 import qfp
+import soic
 import time
 import sys
 import common
+import re
 
 description="""Generate a QFP footprint (land pattern) from an IPC name.
 The name is given on the form QFP<pitch>P<L1>X<L2>[X<height>]-<pincount>, where
@@ -161,21 +163,27 @@ if __name__ == "__main__":
     if not options.name:
         parser.error("-n argument is mandatory")
 
-    qfp = qfp.Qfp()
+    generator = None
+    if re.match("^QFP", options.name):
+        generator = qfp.Qfp()
+    if re.match("^SOIC", options.name):
+        generator = soic.Soic()
+    if re.match("^SOP", options.name):
+        generator = soic.Soic()
 
-    qfp.parse_ipc_name(options.name)
+    generator.parse_ipc_name(options.name)
     if options.density:
-        qfp.set_density(options.density)
+        generator.set_density(options.density)
     if options.footlen: # "L" in MSC-026: 0.6mm
-        qfp.params.footlen = options.footlen
+        generator.params.footlen = options.footlen
     if options.termlen: # "L1" in MSC-026: 1.0mm
-        qfp.params.termlen = options.termlen
+        generator.params.termlen = options.termlen
     if options.termwidth: # "b" in MSC-026, varies with pitch
-        qfp.params.termwidth = options.termwidth
+        generator.params.termwidth = options.termwidth
     if options.jt:
-        qfp.params.JT = options.jt
+        generator.params.JT = options.jt
 
-    package = qfp.generate()
+    package = generator.generate()
 
     if options.format == "kicad_mod":
         f = open(options.outfile, "w")

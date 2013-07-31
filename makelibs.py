@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from qfp import Qfp
+from generator import Qfp
 import footprinter
 import time
 import StringIO
@@ -62,12 +62,12 @@ if __name__ == "__main__":
             packagename = "QFP%dP%dX%d-%d%s" % (p[2] * 100, (p[0] + 2) * 100, (p[1] + 2) * 100, p[3], density)
             index.append(packagename)
             
-            qfp = Qfp()
-            qfp.parse_ipc_name(packagename)
-            package = qfp.generate()
+            generator = Qfp()
+            generator.parse_ipc_name(packagename)
+            package = generator.generate()
             footprinter.make_emp(data, packagename, package, False)        
     
-        f = open("qfp-%s.mod" % density, "w")
+        f = open("generator-%s.mod" % density, "w")
         
         f.write("PCBNEW-LibModule-V1  %s\n" % time.asctime())
         f.write("$INDEX\n")
