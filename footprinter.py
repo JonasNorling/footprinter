@@ -46,9 +46,9 @@ the distance between the pin ends is 9.00 mm, pin pitch 0.50 mm (this is a stand
 """
 
 def make_kicad_mod(f, name, package):
-    f.write("(module %s (layer F.Cu)\n" % name)
+    f.write("(module %s (layer F.Cu) (tedit %X)\n" % (name, time.time()))
     f.write("  (at 0 0)\n")
-    f.write("  (descr %s)\n" % package.description)
+    f.write("  (descr \"%s\")\n" % package.description)
     f.write("  (tags qfp, lqfp, tqfp)\n")
     f.write("  (model smd/tqfp32.wrl (at (xyz 0 0 0)) (scale (xyz 1 1 1)) (rotate (xyz 0 0 0)))\n")
     f.write("  (fp_text reference %s (at 0 -1) (layer F.SilkS)\n" % name)
@@ -68,8 +68,9 @@ def make_emp(f, name, package):
     f.write("$EndINDEX\n")
 
     f.write("$MODULE %s\n" % name)
-    f.write("Po 0 0 0 15 51F78C94 00000000 ~~\n") # FIXME
+    f.write("Po 0 0 0 15 %X 00000000 ~~\n" % time.time())
     f.write("Li %s\n" % name)
+    f.write("Cd %s\n" % package.description)
     f.write("Sc 0\n")
     f.write("AR \n")
     f.write("Op 0 0 0\n")
@@ -178,7 +179,7 @@ if __name__ == "__main__":
         make_kicad_mod(f, options.name, package)
         f.close()
 
-    if options.format == "emp":
+    elif options.format == "emp":
         f = open(options.outfile, "w")
         make_emp(f, options.name, package)
         f.close()
