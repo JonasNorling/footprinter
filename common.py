@@ -93,6 +93,12 @@ class Line:
             self.end[0], self.end[1],
             self.layer, self.width)
 
+    def kicad_mod(self):
+        return "DS %.3f %.3f %.3f %.3f %.2f 21\n" % (
+            self.start[0], self.start[1],
+            self.end[0], self.end[1],
+            self.width)
+
     def draw(self, ctx):
         ctx.set_source_rgb(0, 0.52, 0.52)
         ctx.set_line_width(self.width)
@@ -112,6 +118,9 @@ class Circle:
             self.pos[0], self.pos[1],
             self.pos[0] + self.size, self.pos[1],
             self.layer, self.width)
+
+    def kicad_mod(self, scale):
+        return "\n"
 
     def draw(self, ctx):
         ctx.set_source_rgb(0, 0.52, 0.52)
@@ -136,6 +145,16 @@ class Pad:
             self.rotation,
             self.xsize,
             self.ysize)
+
+    def kicad_mod(self):
+        return """$PAD
+Sh "%d" R %.2f %.2f 0 0 %d
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po %.2f %.2f
+$EndPAD
+""" % (self.number, self.xsize, self.ysize, self.rotation * 10, self.x, self.y)
 
     def draw(self, ctx):
         ctx.save()
