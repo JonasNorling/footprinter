@@ -59,13 +59,13 @@ def make_kicad_mod(f, name, package):
         f.write(d.kicad_sexp())
     f.write(")\n") # close module
 
-def make_emp(f, name, package):
-    f.write("PCBNEW-LibModule-V1  %s\n" % time.asctime())
-    f.write("# encoding utf-8\n")
-    f.write("Units mm\n")
-    f.write("$INDEX\n")
-    f.write("%s\n" % name)
-    f.write("$EndINDEX\n")
+def make_emp(f, name, package, write_lib_header=True):
+    m = common.decimil
+    if write_lib_header:
+        f.write("PCBNEW-LibModule-V1  %s\n" % time.asctime())
+        f.write("$INDEX\n")
+        f.write("%s\n" % name)
+        f.write("$EndINDEX\n")
 
     f.write("$MODULE %s\n" % name)
     f.write("Po 0 0 0 15 %X 00000000 ~~\n" % time.time())
@@ -74,14 +74,17 @@ def make_emp(f, name, package):
     f.write("Sc 0\n")
     f.write("AR \n")
     f.write("Op 0 0 0\n")
-    f.write("T0 0 -1 1.5 1.5 0 0.15 N V 21 N \"%s\"\n" % name)
-    f.write("T1 0 1 1.5 1.5 0 0.15 N I 21 N \"VAL**\"\n")
 
+    f.write("T0 %d %d %d %d %d %d N V 21 N \"%s\"\n" % (m(0), m(-1), m(1.5), m(1.5), m(0), m(0.15), name))
+    f.write("T1 %d %d %d %d %d %d N I 21 N \"%s\"\n" % (m(0), m(1), m(1.5), m(1.5), m(0), m(0.15), "VAL**"))
+    
     for d in package.data:
         f.write(d.kicad_mod())
 
     f.write("$EndMODULE %s\n" % name)
-    f.write("$EndLIBRARY\n")
+    
+    if write_lib_header:
+        f.write("$EndLIBRARY\n")
 
 def make_cairo_png(filename, scale, package):
     import cairo

@@ -6,7 +6,10 @@ def rotate(p, angle):
     th = math.radians(angle)
     return (math.cos(th)*p[0] + math.sin(th)*p[1], -(math.sin(th)*p[0] - math.cos(th)*p[1]))
 
-
+def decimil(mm):
+    """Convert mm to kicad's old 1/10 mil format"""
+    return int(round(mm / 0.00256))
+    
 class PilContext:
     """Keep context for drawing with PIL, emulating Cairo to some extent"""
     def __init__(self, draw):
@@ -94,10 +97,10 @@ class Line:
             self.layer, self.width)
 
     def kicad_mod(self):
-        return "DS %.3f %.3f %.3f %.3f %.2f 21\n" % (
-            self.start[0], self.start[1],
-            self.end[0], self.end[1],
-            self.width)
+        return "DS %d %d %d %d %d 21\n" % (
+            decimil(self.start[0]), decimil(self.start[1]),
+            decimil(self.end[0]), decimil(self.end[1]),
+            decimil(self.width))
 
     def draw(self, ctx):
         ctx.set_source_rgb(0, 0.52, 0.52)
@@ -148,13 +151,13 @@ class Pad:
 
     def kicad_mod(self):
         return """$PAD
-Sh "%d" R %.2f %.2f 0 0 %d
+Sh "%d" R %d %d 0 0 %d
 Dr 0 0 0
 At SMD N 00888000
 Ne 0 ""
-Po %.2f %.2f
+Po %d %d
 $EndPAD
-""" % (self.number, self.xsize, self.ysize, self.rotation * 10, self.x, self.y)
+""" % (self.number, decimil(self.xsize), decimil(self.ysize), self.rotation * 10, decimil(self.x), decimil(self.y))
 
     def draw(self, ctx):
         ctx.save()
