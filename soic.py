@@ -19,7 +19,7 @@ class Soic(object):
         self.params.density = "N"    # IPC-7351 density level (L, N or M)
         self.params.termwidth = None # [mm] maximum terminal (lead) width.
         self.params.termlen = 1.04   # [mm] "L1" in JEDEC drawings (toe-to-package length)
-        self.params.footlen = 1.00   # [mm] "L" in JEDEC drawings (toe-to-heel length)
+        self.params.footlen = 0.60   # [mm] "L" in JEDEC drawings (toe-to-heel length)
         self.params.silkwidth = 0.15 # [mm] silkscreen line width and clearance
         self.params.pitch = None     # [mm] package pitch (distance between pin centers) (JEDEC "b")
         self.params.l = None         # [mm] package toe-to-toe width (lead span) (JEDEC "E")
@@ -118,9 +118,9 @@ class Soic(object):
         packagew = ((pins_per_side - 1) * params.pitch + 1.0) / 2.0 # About right, for small chips
         packageh = l / 2 - params.termlen
         courtyardw = packagew + params.courtyard_excess
-        courtyardh = l / 2 + params.courtyard_excess
-        outlinew = packagew + params.silkwidth
-        outlineh = packageh + params.silkwidth
+        courtyardh = padtoe + params.courtyard_excess
+        outlinew = packagew + params.silkwidth/2.0
+        outlineh = padheel - params.silkwidth * 1.5
 
         # Draw courtyard on package layer
         rect = Rectangle( (-courtyardw, -courtyardh), (courtyardw, courtyardh))
@@ -137,9 +137,15 @@ class Soic(object):
         rect.width = params.silkwidth
         data.append(rect)
         marksize = 0.75
-        rect = Rectangle( (-outlinew, -marksize), (-outlinew + marksize*1.5, marksize))
+        rect = Rectangle( (-outlinew, -marksize), (-outlinew + marksize, marksize))
         rect.width = params.silkwidth
         data.append(rect)
+        
+        # Draw orientation marker by pin 1 on silkscreen
+        markx = first_pad_x - padwidth / 2.0 - params.silkwidth * 2
+        line = Line( (markx, padcenter - params.silkwidth*2), (markx, padcenter))
+        line.width = params.silkwidth
+        data.append(line)
 
         # Add pads, starting with pin 1 in lower-left (negative X, positive Y) corner
         # Pads are drawn on the bottom side and rotated into place

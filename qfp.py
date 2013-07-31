@@ -113,7 +113,7 @@ class Qfp(object):
         pins_per_side = params.pincount // 4
         first_pad_y = (pins_per_side - 1) * params.pitch / 2.0
         courtyardsize = padtoe + params.courtyard_excess
-        outlinesize = l / 2 - params.termlen + params.silkwidth
+        outlinesize = l / 2 - params.termlen + params.silkwidth/2.0
 
         # Draw courtyard on package layer
         rect = Rectangle( (-courtyardsize, -courtyardsize), (courtyardsize, courtyardsize))
