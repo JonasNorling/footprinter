@@ -108,6 +108,7 @@ def make_cairo_png(filename, scale, package):
         d.draw(ctx)
 
     surface.write_to_png(filename)
+    return (w, h)
 
 def make_pil_png(f, scale, package):
     from PIL import Image, ImageDraw
@@ -115,20 +116,23 @@ def make_pil_png(f, scale, package):
     scale = float(scale)
     margin = 0.1 # mm
     size = package.courtyard
-    w = int((size[1][0] - size[0][0] + 2 * margin) * scale)
-    h = int((size[1][1] - size[0][1] + 2 * margin) * scale)
+    size = ( (size[0][0] - margin, size[0][1] - margin),
+             (size[1][0] + margin, size[1][1] + margin) )
+    w = int((size[1][0] - size[0][0]) * scale)
+    h = int((size[1][1] - size[0][1]) * scale)
 
     im = Image.new("RGBA", (w, h))
     draw = ImageDraw.Draw(im)
     ctx = common.PilContext(draw)
 
-    ctx.translate(w/2, h/2)
     ctx.scale(scale, scale)
+    ctx.translate(-size[0][0], -size[0][1])
 
     for d in package.data:
         d.draw(ctx)
 
     im.save(f, "png")
+    return (w, h)
 
 
 if __name__ == "__main__":

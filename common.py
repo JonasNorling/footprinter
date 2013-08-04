@@ -16,7 +16,7 @@ class PilContext:
         self.draw = draw
         self.pos = (0, 0)
         self.matrixstack = []
-        self.matrix = numpy.matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        self.matrix = numpy.matrix([[1.0, 0, 0], [0, 1.0, 0], [0, 0, 1.0]])
 
     def devicecoord(self, c):
         v = numpy.matrix([ [c[0]], [c[1]], [1] ])
@@ -52,7 +52,7 @@ class PilContext:
 
     def move_to(self, x, y):
         self.pos = self.devicecoord((x, y))
-
+        
     def line_to(self, x, y):
         self.draw.line((self.pos, self.devicecoord((x, y))), fill=self.color, width=self.linewidth)
         self.pos = self.devicecoord((x, y))
@@ -77,8 +77,13 @@ class PilContext:
 
     
 class Package:
-    pass
+    def __init__(self):
+        self.data = []
+        self.bbox = ( (0,0), (0,0) )
 
+    def expand_bbox(self, p):
+        self.bbox = ( (min(self.bbox[0][0], p[0]), min(self.bbox[0][1], p[1])),
+                      (max(self.bbox[1][0], p[0]), max(self.bbox[1][1], p[1])) )
 
 class Line:
     def __init__(self, start, end, width = 0):
@@ -176,7 +181,7 @@ class Circle:
 
 
 class Pad:
-    def __init__(self, number):
+    def __init__(self, number = None):
         self.number = number
         self.rotation = 0
 
