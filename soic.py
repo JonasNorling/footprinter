@@ -18,7 +18,7 @@ class Soic(object):
         self.params = Params()
         self.params.density = "N"    # IPC-7351 density level (L, N or M)
         self.params.termwidth = None # [mm] maximum terminal (lead) width.
-        self.params.termlen = 1.04   # [mm] "L1" in JEDEC drawings (toe-to-package length)
+        self.params.termlen = 1.40   # [mm] "L1" in JEDEC drawings (toe-to-package length)
         self.params.footlen = 0.60   # [mm] "L" in JEDEC drawings (toe-to-heel length)
         self.params.silkwidth = 0.15 # [mm] silkscreen line width and clearance
         self.params.pitch = None     # [mm] package pitch (distance between pin centers) (JEDEC "b")
@@ -86,11 +86,11 @@ class Soic(object):
             # Pick defaults from JEDEC standards
             self.params.termwidth = 0.1 # Ridiculous
             if self.params.pitch <= 0.45:
-                self.params.termwidth = 0.23
+                self.params.termwidth = 0.23 # 0.65 pitch, from MO-153
             elif self.params.pitch <= 0.55:
-                self.params.termwidth = 0.27
+                self.params.termwidth = 0.27 # 0.65 pitch, from MO-153
             elif self.params.pitch <= 0.70:
-                self.params.termwidth = 0.38
+                self.params.termwidth = 0.30 # 0.65 pitch, from MO-153
             elif self.params.pitch <= 0.90:
                 self.params.termwidth = 0.45
             else:
@@ -103,8 +103,9 @@ class Soic(object):
         params = self.params
         package = Package()
 
-        package.description = "SOIC-%d, %.02fmm pitch, xxx mm body" % (
-                                                    params.pincount, params.pitch)
+        body = params.l - 2*params.termlen
+        package.description = "SOP-%d, %.02fmm pitch, %.2f mm body" % (
+                                                    params.pincount, params.pitch, body)
     
         l = params.l # Package lead span
         # Positions and sizes of things relative to data center
@@ -120,7 +121,7 @@ class Soic(object):
         courtyardw = packagew + params.courtyard_excess
         courtyardh = padtoe + params.courtyard_excess
         outlinew = packagew + params.silkwidth/2.0
-        outlineh = padheel - params.silkwidth * 1.5
+        outlineh = packageh + params.silkwidth/2.0
 
         # Draw courtyard on package layer
         rect = Rectangle( (-courtyardw, -courtyardh), (courtyardw, courtyardh))
